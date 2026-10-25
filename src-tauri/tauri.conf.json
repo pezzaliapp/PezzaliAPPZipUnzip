@@ -1,0 +1,60 @@
+{
+  "$schema": "https://schema.tauri.app/config/2",
+  "productName": "PezzaliAPPZipUnzip",
+  "version": "1.0.0",
+  "identifier": "app.pezzali.zipunzip",
+  "build": {
+    "beforeDevCommand": "npm run dev",
+    "devUrl": "http://localhost:1420",
+    "beforeBuildCommand": "npm run build",
+    "frontendDist": "../dist"
+  },
+  "app": {
+    "withGlobalTauri": false,
+    "windows": [
+      {
+        "title": "PezzaliAPPZipUnzip",
+        "width": 960,
+        "height": 680,
+        "minWidth": 640,
+        "minHeight": 520,
+        "dragDropEnabled": true
+      }
+    ],
+    "security": {
+      "csp": "default-src 'self'; img-src 'self' data:; style-src 'self' 'unsafe-inline'; script-src 'self'; connect-src ipc: http://ipc.localhost; font-src 'self'; object-src 'none'; base-uri 'none'; form-action 'none'; frame-ancestors 'none'",
+      "freezePrototype": true
+    }
+  },
+  "bundle": {
+    "active": true,
+    "targets": "all",
+    "publisher": "Alessandro Pezzali",
+    "copyright": "© 2026 Alessandro Pezzali — MIT (motore 7-Zip: LGPL-2.1 / BSD, vedi THIRD_PARTY_NOTICES)",
+    "category": "Utility",
+    "shortDescription": "Comprimi ed estrai archivi, offline, con 7-Zip",
+    "longDescription": "PezzaliAPPZipUnzip comprime ed estrae archivi usando il motore open source 7-Zip. Funziona interamente offline, senza telemetria.",
+    "license": "MIT",
+    "resources": {
+      "engine/": "engine/",
+      "../THIRD_PARTY_NOTICES.md": "THIRD_PARTY_NOTICES.md",
+      "../LICENSE": "LICENSE"
+    },
+    "icon": [
+      "icons/32x32.png",
+      "icons/128x128.png",
+      "icons/128x128@2x.png",
+      "icons/icon.icns",
+      "icons/icon.ico"
+    ],
+    "macOS": {
+      "signingIdentity": "-",
+      "minimumSystemVersion": "11.0"
+    },
+    "linux": {
+      "deb": {
+        "depends": []
+      }
+    }
+  }
+}

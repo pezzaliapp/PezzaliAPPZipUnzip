@@ -66,12 +66,18 @@ sul motore ufficiale 7-Zip 26.05, interamente offline e senza costi.
 **Pronta per una pubblicazione macOS di prova**, previa tua autorizzazione.
 Prima di pubblicare:
 
-1. Decidere se verificare Windows e Linux (es. su un PC/VM esistente, oppure
-   avviando Colima già installato: richiede la tua autorizzazione perché
-   scrive fuori dal progetto).
+1. Decidere se verificare Windows e Linux: strategia gratuita pronta in
+   [MULTIPIATTAFORMA.md](MULTIPIATTAFORMA.md) (Colima in locale per Linux,
+   GitHub Actions su repository pubblico per Windows; entrambe richiedono
+   la tua autorizzazione).
 2. Allegare alla release il sorgente `7z2605-src.tar.xz` (obbligo LGPL).
 3. Indicare nelle note le piattaforme realmente verificate.
 4. Push e release: **non eseguiti**, in attesa di autorizzazione.
+
+Ultimo pacchetto macOS (25 ottobre 2026, interfaccia senza badge del motore,
+nessun percorso personale nei binari):
+`src-tauri/target/universal-apple-darwin/release/bundle/dmg/PezzaliAPPZipUnzip_1.0.0_universal.dmg`,
+SHA-256 `234a513e5f1f10d19015b3dd1a379ca06777c1dc24e137fd8d4e6d171b43043b`.
 
 Commit locali: presenti sul ramo `main`. Nessun push, deploy o release effettuati.
 Nessun costo sostenuto.

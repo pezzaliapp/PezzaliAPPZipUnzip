@@ -4,7 +4,7 @@ Tutti gli strumenti sono gratuiti. Nessuna firma a pagamento è richiesta.
 
 ## Prerequisiti comuni
 
-- Node.js 20+ e npm
+- Node.js 22.12+ o 24 e npm (richiesti da Vite 8 e Vitest 5)
 - Rust stabile (`rustup`), 1.77 o successivo
 - Prerequisiti di Tauri 2 per il sistema: https://v2.tauri.app/start/prerequisites/
 
@@ -14,7 +14,13 @@ npm run fetch-7zip   # motore 7-Zip 26.05 per la piattaforma corrente (SHA-256 v
 ```
 
 `fetch-7zip` accetta `--target mac|linux-x64|linux-arm64|win-x64|win-arm64`.
-Senza il motore incluso l'app cerca 7-Zip installato nel sistema.
+Il motore finisce in `src-tauri/engine/`, cartella non versionata. In sviluppo,
+senza il motore incluso, l'app cerca 7-Zip installato nel sistema (`7zz`, `7z`, `7za`).
+
+`npm run tauri build` passa da `scripts/tauri.mjs`, che:
+- si ferma se il motore manca, così nessun pacchetto viene distribuito senza 7-Zip;
+- aggiunge `--remap-path-prefix` per la cartella utente e il progetto, così i
+  binari non contengono percorsi locali né il nome dell'utente.
 
 ## macOS (verificato)
 
@@ -27,6 +33,8 @@ Risultati in `src-tauri/target/<target>/release/bundle/` (`.app`, `.dmg`).
 L'app ha firma *ad-hoc* e non è notarizzata (servirebbe l'Apple Developer
 Program, a pagamento). Al primo avvio: clic destro sull'app → **Apri**, oppure
 Impostazioni di Sistema → Privacy e sicurezza → **Apri comunque**.
+
+Strategia gratuita per verificare Windows e Linux: [MULTIPIATTAFORMA.md](MULTIPIATTAFORMA.md).
 
 ## Windows (non ancora verificato)
 

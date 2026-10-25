@@ -1,0 +1,93 @@
+# Build e test su Windows, Linux e macOS con i runner standard di GitHub,
+# gratuiti per i repository pubblici. Nessuna release, nessuna pubblicazione,
+# nessun segreto: i pacchetti restano artefatti temporanei del run (7 giorni).
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  build-test:
+    name: ${{ matrix.os }}
+    runs-on: ${{ matrix.os }}
+    timeout-minutes: 60
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-24.04, ubuntu-24.04-arm, windows-latest, windows-11-arm, macos-latest]
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24
+
+      - uses: dtolnay/rust-toolchain@stable
+        with:
+          components: clippy
+
+      - name: Dipendenze Linux
+        if: runner.os == 'Linux'
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y libwebkit2gtk-4.1-dev libxdo-dev libssl-dev \
+            libayatana-appindicator3-dev librsvg2-dev xvfb file
+
+      - run: npm ci
+      - run: npm run fetch-7zip
+      - run: npx tsc --noEmit
+      - run: npm test
+
+      - name: Test Rust (unità, IPC, integrazione con 7-Zip reale)
+        working-directory: src-tauri
+        run: cargo test -- --nocapture
+
+      - name: Clippy
+        working-directory: src-tauri
+        run: cargo clippy --all-targets -- -D warnings
+
+      - name: Pacchetti
+        run: npm run tauri build
+        env:
+          APPIMAGE_EXTRACT_AND_RUN: 1
+
+      - name: Diagnostica motore (Linux)
+        if: runner.os == 'Linux'
+        run: xvfb-run -a src-tauri/target/release/pezzaliapp-zipunzip --self-test
+
+      - name: Diagnostica motore (macOS)
+        if: runner.os == 'macOS'
+        run: src-tauri/target/release/bundle/macos/PezzaliAPPZipUnzip.app/Contents/MacOS/pezzaliapp-zipunzip --self-test
+
+      - name: Diagnostica motore (Windows)
+        if: runner.os == 'Windows'
+        shell: cmd
+        run: |
+          src-tauri\target\release\pezzaliapp-zipunzip.exe --self-test > self-test.txt
+          type self-test.txt
+          findstr /C:"(incluso)" self-test.txt
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: pacchetti-${{ matrix.os }}
+          retention-days: 7
+          if-no-files-found: error
+          path: |
+            src-tauri/target/release/bundle/deb/*.deb
+            src-tauri/target/release/bundle/appimage/*.AppImage
+            src-tauri/target/release/bundle/rpm/*.rpm
+            src-tauri/target/release/bundle/nsis/*.exe
+            src-tauri/target/release/bundle/msi/*.msi
+            src-tauri/target/release/bundle/dmg/*.dmg

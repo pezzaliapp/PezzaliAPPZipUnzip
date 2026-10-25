@@ -86,9 +86,7 @@ async function main() {
     }
 
     mkdirSync(engineDir, { recursive: true });
-    for (const f of readdirSync(engineDir)) {
-      if (f !== "README.md") rmSync(join(engineDir, f), { recursive: true, force: true });
-    }
+    for (const f of readdirSync(engineDir)) rmSync(join(engineDir, f), { recursive: true, force: true });
     for (const f of [...asset.bins, ...DOCS]) {
       const src = join(out, f);
       if (!existsSync(src)) throw new Error(`file mancante nel pacchetto 7-Zip: ${f}`);

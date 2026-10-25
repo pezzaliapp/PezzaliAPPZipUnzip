@@ -64,6 +64,23 @@ Motore: 7-Zip 26.05 ufficiale incluso (`src-tauri/engine/7zz`).
 - **Non eseguito**: interazione dell'utente con la finestra nativa (catture
   dello schermo bloccate dai permessi di sistema, non modificati).
 
+### Pacchetto macOS rigenerato — 25 ottobre 2026 (commit d950160 + correzioni)
+
+| Verifica | Esito |
+|---|---|
+| `npm run tauri build -- --target universal-apple-darwin` | `.app` 13,68 MiB, `.dmg` 5,93 MiB |
+| Interfaccia incorporata | il binario contiene `assets/index-CS71IGQU.js`, nome dato dall'hash del contenuto del build che include la nuova sezione Informazioni e non il badge del motore |
+| `hdiutil verify` del DMG | checksum valido |
+| `codesign --verify --deep --strict` (DMG montato in sola lettura) | valida, firma ad-hoc |
+| `--self-test` arm64 e x86_64 (Rosetta) dal DMG | `7-Zip 26.05 (incluso)` |
+| `7zz` nel pacchetto | identico byte per byte a quello estratto dall'archivio ufficiale verificato (SHA-256) |
+| Licenze nel pacchetto | `LICENSE` (MIT), `THIRD_PARTY_NOTICES.md`, `engine/License.txt` (identico all'originale), `engine/readme.txt`, `engine/VERSION.txt` |
+| Avvio dell'app dal DMG | processo attivo dopo 4 s, nessun errore |
+| Dati personali | prima della correzione il binario conteneva 559 percorsi `/Users/<utente>/.cargo/…`: ora 0 (`--remap-path-prefix` in `scripts/tauri.mjs`); nessun indirizzo email, chiave o token (le occorrenze di "secret"/"token" sono nel dizionario Brotli) |
+| File di sviluppo | rimosso dal pacchetto `engine/README.md`; il DMG contiene solo l'app, il link ad Applicazioni, l'icona del volume e il `.DS_Store` del layout (senza percorsi) |
+| Test dopo le correzioni | Vitest 6/6, Rust 12/12 + 13/13, clippy 0 avvisi, `cargo fmt --check` ok |
+| Build senza motore | `npm run tauri build` si ferma con un messaggio chiaro |
+
 ## Non verificato
 
 - Windows e Linux (nessuna macchina o VM avviata; vedi rapporto finale).

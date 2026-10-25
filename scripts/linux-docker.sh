@@ -12,14 +12,22 @@
 set -euo pipefail
 
 arch="${1:-arm64}"
-case "$arch" in arm64|amd64) ;; *) echo "architettura non valida: $arch" >&2; exit 2 ;; esac
+# Digest di ubuntu:24.04 per architettura, dall'indice ufficiale
+# sha256:68ee22004a9109b44973313b02ff7b1de250f1de0f5ecb628d73f579aaff33ac.
+case "$arch" in
+  arm64) base="ubuntu@sha256:18b33ff3829707f31ada654a963b9ee35f2e6f0241b964bd17a22a9b330cb63d" ;;
+  amd64) base="ubuntu@sha256:a2d43bffc46670d7108bb3c0468c67c5557c4c92e83e1e34cbff1322ad1b94dc" ;;
+  *) echo "architettura non valida: $arch" >&2; exit 2 ;;
+esac
 
 root="$(cd "$(dirname "$0")/.." && pwd)"
 out="$root/linux-out/$arch"
 image="pezzaliapp-zipunzip-linux:$arch"
 mkdir -p "$out"
 
-docker build --platform "linux/$arch" -t "$image" "$root/ci/linux"
+docker build --platform "linux/$arch" --build-arg "BASE=$base" -t "$image" "$root/ci/linux"
+got="$(docker image inspect "$image" --format '{{.Architecture}}')"
+[ "$got" = "$arch" ] || { echo "immagine $image con architettura $got invece di $arch" >&2; exit 1; }
 
 docker run --rm --platform "linux/$arch" \
   -v "$root:/repo:ro" -v "$out:/out" \

@@ -1,8 +1,11 @@
 # Ambiente di build e test Linux per PezzaliAPPZipUnzip (Ubuntu 24.04).
 # Usato da scripts/linux-docker.sh; non contiene sorgenti né credenziali.
-# Immagine ufficiale Docker "library/ubuntu", fissata per digest (indice multi-architettura)
-# verificato sul registro il 25 ottobre 2026.
-FROM ubuntu:24.04@sha256:68ee22004a9109b44973313b02ff7b1de250f1de0f5ecb628d73f579aaff33ac
+# Immagine ufficiale Docker "library/ubuntu" 24.04, fissata per digest. L'indice
+# multi-architettura sha256:68ee22004a91… è stato verificato sul registro il
+# 25 ottobre 2026; scripts/linux-docker.sh passa il digest della singola
+# architettura (il builder classico di Docker ignora --platform con un indice).
+ARG BASE=ubuntu:24.04@sha256:68ee22004a9109b44973313b02ff7b1de250f1de0f5ecb628d73f579aaff33ac
+FROM ${BASE}
 
 ENV DEBIAN_FRONTEND=noninteractive
 RUN apt-get update && apt-get install -y --no-install-recommends \

@@ -299,7 +299,7 @@ mod ipc_tests {
     use tauri::ipc::{CallbackFn, InvokeBody};
     use tauri::test::{get_ipc_response, mock_builder, INVOKE_KEY};
     use tauri::webview::InvokeRequest;
-    use tauri::WebviewWindowBuilder;
+    use tauri::{Manager, WebviewWindowBuilder};
 
     fn invoke(
         w: &tauri::WebviewWindow<tauri::test::MockRuntime>,
@@ -327,6 +327,11 @@ mod ipc_tests {
         let w = WebviewWindowBuilder::new(&app, "main", Default::default())
             .build()
             .unwrap();
+        // Nei test la cartella risorse non contiene il motore: si usa quello
+        // del progetto (npm run fetch-7zip), con ripiego su 7-Zip di sistema.
+        let bundled = std::path::Path::new(env!("CARGO_MANIFEST_DIR")).join("engine");
+        *app.state::<super::AppState>().engine.lock().unwrap() =
+            super::Engine::locate(Some(&bundled));
 
         let engine = invoke(&w, "engine_info", json!({})).expect("motore 7-Zip non trovato");
         assert!(engine["version"].as_str().unwrap().contains('.'));

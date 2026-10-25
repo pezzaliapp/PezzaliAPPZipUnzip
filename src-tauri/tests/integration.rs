@@ -697,3 +697,104 @@ fn not_an_archive() {
     let e = ops::extract(&c, &work.path().join("manca.zip"), work.path(), None, false).unwrap_err();
     assert_eq!(e.code, "not-found");
 }
+
+/// Esegue uno strumento di sistema; `None` se non è installato.
+fn system_tool(cmd: &str, args: &[&std::ffi::OsStr], cwd: &Path) -> Option<bool> {
+    match std::process::Command::new(cmd)
+        .args(args)
+        .current_dir(cwd)
+        .output()
+    {
+        Ok(o) => Some(o.status.success()),
+        Err(_) => {
+            eprintln!("SALTATO: strumento di sistema '{cmd}' non disponibile");
+            None
+        }
+    }
+}
+
+#[cfg(unix)]
+#[test]
+fn interoperability_with_system_tools() {
+    let eng = engine();
+    let cancel = AtomicBool::new(false);
+    let c = ctx(&eng, &cancel);
+    let work = tempfile::tempdir().unwrap();
+    let src = sample_tree(work.path());
+    let os = |s: &str| std::ffi::OsString::from(s);
+
+    // App → strumenti di sistema
+    let z = ops::compress(
+        &c,
+        std::slice::from_ref(&src),
+        work.path(),
+        "interop",
+        &opts(Format::Zip),
+    )
+    .unwrap();
+    let out_unzip = work.path().join("unzip-out");
+    fs::create_dir(&out_unzip).unwrap();
+    if let Some(ok) = system_tool(
+        "unzip",
+        &[
+            &os("-q"),
+            z.output.as_os_str(),
+            &os("-d"),
+            out_unzip.as_os_str(),
+        ],
+        work.path(),
+    ) {
+        assert!(ok, "unzip non riesce ad aprire lo ZIP creato dall'app");
+        assert_same_tree(&src, &out_unzip.join("Progetto è più"));
+    }
+    let tgz = ops::compress(
+        &c,
+        std::slice::from_ref(&src),
+        work.path(),
+        "interop",
+        &opts(Format::TarGz),
+    )
+    .unwrap();
+    let out_tar = work.path().join("tar-out");
+    fs::create_dir(&out_tar).unwrap();
+    if let Some(ok) = system_tool(
+        "tar",
+        &[
+            &os("-xzf"),
+            tgz.output.as_os_str(),
+            &os("-C"),
+            out_tar.as_os_str(),
+        ],
+        work.path(),
+    ) {
+        assert!(ok, "tar non riesce ad aprire il TAR.GZ creato dall'app");
+        assert_same_tree(&src, &out_tar.join("Progetto è più"));
+    }
+
+    // Strumenti di sistema → app
+    let name = std::ffi::OsString::from("Progetto è più");
+    let sys_tgz = work.path().join("sistema.tar.gz");
+    if system_tool(
+        "tar",
+        &[&os("-czf"), sys_tgz.as_os_str(), &name],
+        work.path(),
+    ) == Some(true)
+    {
+        let dest = work.path().join("da-tar");
+        fs::create_dir(&dest).unwrap();
+        let x = ops::extract(&c, &sys_tgz, &dest, None, false).unwrap();
+        assert_same_tree(&src, &x.output);
+    }
+    let sys_zip = work.path().join("sistema.zip");
+    if system_tool(
+        "zip",
+        &[&os("-qr"), sys_zip.as_os_str(), &name],
+        work.path(),
+    ) == Some(true)
+    {
+        let dest = work.path().join("da-zip");
+        fs::create_dir(&dest).unwrap();
+        let x = ops::extract(&c, &sys_zip, &dest, None, false).unwrap();
+        assert_same_tree(&src, &x.output);
+    }
+}

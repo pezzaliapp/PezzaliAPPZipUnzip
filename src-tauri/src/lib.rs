@@ -126,7 +126,10 @@ async fn list_archive<R: Runtime>(
     archive: PathBuf,
     password: Option<String>,
 ) -> Result<ListingSummary, OpError> {
-    let mut l = run_job(app, job_id, move |ctx| ops::list(ctx, &archive, password.as_deref())).await?;
+    let mut l = run_job(app, job_id, move |ctx| {
+        ops::list(ctx, &archive, password.as_deref())
+    })
+    .await?;
     let total_files = l.entries.iter().filter(|e| !e.is_dir).count();
     let summary = ListingSummary {
         total_dirs: l.entries.len() - total_files,
@@ -260,6 +263,30 @@ pub fn run() {
     with_commands(tauri::Builder::default())
         .plugin(tauri_plugin_dialog::init())
         .plugin(tauri_plugin_opener::init())
+        .setup(|app| {
+            // Diagnostica: `--self-test` stampa il motore trovato ed esce.
+            if std::env::args().any(|a| a == "--self-test") {
+                let state = app.state::<AppState>();
+                let code = match get_engine(app.handle(), &state) {
+                    Ok(e) => {
+                        println!(
+                            "PezzaliAPPZipUnzip {} — 7-Zip {} ({}) {}",
+                            env!("CARGO_PKG_VERSION"),
+                            e.version,
+                            if e.bundled { "incluso" } else { "di sistema" },
+                            e.path.display()
+                        );
+                        0
+                    }
+                    Err(e) => {
+                        eprintln!("PezzaliAPPZipUnzip: {e}");
+                        1
+                    }
+                };
+                std::process::exit(code);
+            }
+            Ok(())
+        })
         .run(context())
         .expect("errore durante l'avvio di PezzaliAPPZipUnzip");
 }

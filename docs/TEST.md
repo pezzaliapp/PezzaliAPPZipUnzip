@@ -58,7 +58,9 @@ Motore: 7-Zip 26.05 ufficiale incluso (`src-tauri/engine/7zz`).
 - **Interfaccia**: resa verificata in Chrome headless con IPC Tauri simulato
   (harness temporaneo fuori dal repository): stati iniziale, archivio aperto,
   password, avviso di sicurezza, avanzamento, risultato; tema chiaro e scuro;
-  italiano e inglese.
+  italiano e inglese. Dopo la rimozione del badge del motore dall'intestazione
+  (25 ottobre 2026) verificate di nuovo la schermata principale e la finestra
+  Informazioni con le attribuzioni di 7-Zip, in italiano e inglese.
 - **Non eseguito**: interazione dell'utente con la finestra nativa (catture
   dello schermo bloccate dai permessi di sistema, non modificati).
 

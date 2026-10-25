@@ -128,12 +128,6 @@ export default function App() {
     }
   };
 
-  const engineLabel = engine
-    ? t(engine.bundled ? "engine.bundled" : "engine.system", { v: engine.version })
-    : engineError
-      ? t("engine.missing")
-      : t("engine.loading");
-
   return (
     <I18n.Provider value={{ t, lang }}>
       <div className="app">
@@ -148,7 +142,6 @@ export default function App() {
             </div>
           </div>
           <div className="top-actions">
-            <span className={`chip ${engineError ? "bad" : ""}`} title={engine?.path}>{engineLabel}</span>
             <span className="chip ok">{t("offline")}</span>
             <button className="btn ghost small" onClick={() => setLang(lang === "it" ? "en" : "it")}>
               {t("lang.switch")}

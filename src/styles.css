@@ -244,6 +244,7 @@ input[aria-invalid="true"] { border-color: var(--danger); }
 .dialog::backdrop { background: rgb(10 14 28 / 55%); }
 .dialog p { margin: 0 0 10px; }
 .dialog h2 { margin-bottom: 12px; color: var(--brand); }
+.dialog h3 { margin: 18px 0 8px; font-size: 1rem; }
 
 .footer { text-align: center; font-size: 0.78rem; padding-top: 4px; }
 

@@ -38,8 +38,6 @@ RUN curl -fsSL https://sh.rustup.rs | sh -s -- -y --profile minimal \
       --default-toolchain "${RUST_VERSION}" --component clippy,rustfmt \
     && rustc --version
 
-# AppImage senza FUSE dentro il container.
-ENV APPIMAGE_EXTRACT_AND_RUN=1
 # Locale UTF-8 come su un desktop Linux: in locale POSIX `unzip` (Info-ZIP)
 # non ricrea i nomi di file non ASCII (test d'interoperabilità).
 ENV LANG=C.UTF-8

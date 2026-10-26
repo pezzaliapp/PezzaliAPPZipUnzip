@@ -6,7 +6,7 @@
 # - Il repository è montato in SOLA LETTURA; si compila una copia del commit
 #   corrente (git archive) dentro il container.
 # - Unica scrittura sul Mac: la cartella linux-out/<arch>/ del progetto
-#   (pacchetti .deb/.AppImage e log), ignorata da git.
+#   (pacchetto .deb e log; niente AppImage, vedi docs/MULTIPIATTAFORMA.md), ignorata da git.
 # - amd64 su Apple Silicon usa Rosetta di Colima (rosetta: true).
 # Prerequisito: Colima avviato dall'utente (`colima start`).
 set -euo pipefail
@@ -42,10 +42,10 @@ docker run --rm --platform "linux/$arch" \
     npx tsc --noEmit
     npm test
     (cd src-tauri && cargo test && cargo clippy --all-targets -- -D warnings)
-    npm run tauri build -- --bundles deb,appimage
+    npm run tauri build -- --bundles deb
     bin=src-tauri/target/release/pezzaliapp-zipunzip
     xvfb-run -a "$bin" --self-test | tee /out/self-test.txt
-    find src-tauri/target/release/bundle -maxdepth 2 \( -name "*.deb" -o -name "*.AppImage" \) -exec cp {} /out/ \;
-    (cd /out && sha256sum *.deb *.AppImage > SHA256SUMS.txt && cat SHA256SUMS.txt)
+    find src-tauri/target/release/bundle -maxdepth 2 -name "*.deb" -exec cp {} /out/ \;
+    (cd /out && sha256sum *.deb > SHA256SUMS.txt && cat SHA256SUMS.txt)
   '
 echo "✓ risultati in $out"

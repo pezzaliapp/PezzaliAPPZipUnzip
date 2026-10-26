@@ -376,6 +376,7 @@ fn write_zip(path: &Path, files: &[(&str, &[u8])]) {
 }
 
 /// TAR ustar minimale: (nome, tipo '0' file / '2' symlink / '1' hardlink, link, dati).
+#[cfg(unix)]
 fn write_tar(path: &Path, items: &[(&str, u8, &str, &[u8])]) {
     let mut out = Vec::new();
     for (name, kind, link, data) in items {
@@ -699,6 +700,7 @@ fn not_an_archive() {
 }
 
 /// Esegue uno strumento di sistema; `None` se non è installato.
+#[cfg(unix)]
 fn system_tool(cmd: &str, args: &[&std::ffi::OsStr], cwd: &Path) -> Option<bool> {
     match std::process::Command::new(cmd)
         .args(args)

@@ -39,6 +39,13 @@ computer: nessuna connessione di rete, nessuna telemetria, nessun account.
 
 Dettagli in [docs/SICUREZZA.md](docs/SICUREZZA.md).
 
+## Download
+
+Versione 1.0.0: [release su GitHub](https://github.com/pezzaliapp/PezzaliAPPZipUnzip/releases/tag/v1.0.0)
+(macOS universale, Windows x64, Linux x64 e ARM64 `.deb`, con SHA-256 e istruzioni).
+Gli installer non sono firmati con certificati a pagamento: macOS e Windows
+mostrano un avviso al primo avvio, spiegato nelle note della release.
+
 ## Piattaforme
 
 | Piattaforma | Stato |

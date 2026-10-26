@@ -66,24 +66,37 @@ Server 2025): build, test, installer e diagnostica dopo l'installazione.
 6. Nessuna associazione dei tipi di file e nessuna estrazione selettiva di singoli file (possibili sviluppi).
 7. Interazione con la finestra nativa non automatizzata (catture schermo bloccate dai permessi macOS, non modificati); l'interfaccia è stata verificata in un browser headless con IPC simulato.
 
-## 7. Preparazione alla pubblicazione
+## 7. Pubblicazione
 
-**Pronta per una pubblicazione macOS di prova**, previa tua autorizzazione.
-Prima di pubblicare:
+Release **v1.0.0** pubblicata il 26 ottobre 2026:
+https://github.com/pezzaliapp/PezzaliAPPZipUnzip/releases/tag/v1.0.0
+(tag sul commit `522cfae`).
 
-1. Windows x64 verificato con GitHub Actions (0 minuti fatturati).
-2. Allegare alla release il sorgente `7z2605-src.tar.xz` (obbligo LGPL).
-3. Indicare nelle note le piattaforme realmente verificate.
-4. Push e release: **non eseguiti**, in attesa di autorizzazione.
+| File | SHA-256 |
+|---|---|
+| `PezzaliAPPZipUnzip_1.0.0_universal.dmg` | `234a513e5f1f10d19015b3dd1a379ca06777c1dc24e137fd8d4e6d171b43043b` |
+| `PezzaliAPPZipUnzip_1.0.0_x64-setup.exe` | `17ee09ec2f32f3cf7e25faeafe8751834a6d955b952c9478e6e647b29a221070` |
+| `PezzaliAPPZipUnzip_1.0.0_amd64.deb` | `22324310aaf416ed6ffddccb73c56e735e7b09283194c792b3df4027aa54ce58` |
+| `PezzaliAPPZipUnzip_1.0.0_arm64.deb` | `a5945265d20fca42115461b6c5f8b14f326e99225ea7a6bea20a36cdd6560aa3` |
+| `7z2605-src.tar.xz` (sorgente 7-Zip, obbligo LGPL) | `0b6080b8c3e7a579161d2d495224c0e51c467576cb4c7048b0ab485ef44cc22e` |
 
-Ultimo pacchetto macOS (25 ottobre 2026, interfaccia senza badge del motore,
-nessun percorso personale nei binari):
-`src-tauri/target/universal-apple-darwin/release/bundle/dmg/PezzaliAPPZipUnzip_1.0.0_universal.dmg`,
-SHA-256 `234a513e5f1f10d19015b3dd1a379ca06777c1dc24e137fd8d4e6d171b43043b`.
+- Pacchetti macOS e Linux compilati in locale; installer Windows dal run
+  GitHub Actions 40375818036. Il codice dell'app è identico al tag (differenze
+  solo in test, documentazione, CI e opzione di build Windows).
+- L'MSI per Windows è stato prodotto ma non installato in prova: non è
+  distribuito.
+- Installer non firmati né notarizzati (nessun certificato a pagamento).
+- Dopo la pubblicazione ogni file è stato riscaricato dagli URL pubblici e
+  confrontato con `SHA256SUMS.txt`.
+- Costi: GitHub Actions 0 minuti fatturati (repository pubblico, runner
+  standard); le release di GitHub non hanno costi né limiti di banda.
 
-Pacchetti Linux (26 ottobre 2026), in `linux-out/` (ignorata da git):
-- `linux-out/arm64/PezzaliAPPZipUnzip_1.0.0_arm64.deb`, SHA-256 `a5945265d20fca42115461b6c5f8b14f326e99225ea7a6bea20a36cdd6560aa3`
-- `linux-out/amd64/PezzaliAPPZipUnzip_1.0.0_amd64.deb`, SHA-256 `22324310aaf416ed6ffddccb73c56e735e7b09283194c792b3df4027aa54ce58`
+## 8. Versione 1.1.0 proposta
 
-Commit locali: presenti sul ramo `main`. Nessun push, deploy o release effettuati.
-Nessun costo sostenuto.
+Dalla [ROADMAP](ROADMAP.md), le voci con il miglior rapporto beneficio/rischio:
+1. Prove manuali su un PC Windows 10/11 e su un desktop Linux reali.
+2. «Apri con…» dal Finder su macOS.
+3. Finestra Informazioni compatta (oggi richiede lo scorrimento a 680 px).
+4. Avviso quando si rilasciano più archivi nella scheda Estrai.
+5. Messaggi d'errore più specifici con «Copia dettagli».
+6. Ricerca nell'anteprima del contenuto.

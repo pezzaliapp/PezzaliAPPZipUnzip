@@ -86,9 +86,12 @@ sui prezzi 2026). I runner "larger" sono a pagamento anche nei repository
 pubblici e **non vengono usati**.
 
 Preparato: `.github/workflows/ci.yml`:
-- matrice: `ubuntu-24.04`, `ubuntu-24.04-arm`, `windows-latest`, `windows-11-arm`, `macos-latest`;
+- matrice: `windows-latest` (Windows x64) e `ubuntu-24.04` (Linux x64 su
+  hardware reale); timeout 30 minuti per job;
 - passi: dipendenze, `fetch-7zip`, `tsc`, Vitest, `cargo test`, `clippy`,
-  `tauri build`, `--self-test`;
+  `tauri build`, `--self-test`; su Windows anche lettura dell'installer NSIS
+  con 7-Zip (licenze, `7z.exe` identico all'originale), installazione
+  silenziosa sul runner e `--self-test` dal percorso installato;
 - sicurezza: permessi `contents: read`, nessun segreto, nessuna release,
   credenziali di checkout non conservate; pacchetti come artefatti
   temporanei (7 giorni).
@@ -97,10 +100,8 @@ Garanzie di costo zero da controllare prima del push:
 1. il repository resta **pubblico**;
 2. nessun metodo di pagamento sull'account GitHub (Settings → Billing): senza
    metodo di pagamento GitHub non può addebitare nulla;
-3. nella matrice solo etichette standard. Le etichette arm64 sono indicate da
-   GitHub come gratuite per i repository pubblici: va riconfermato sulla
-   pagina "Choosing the runner for a job" il giorno del primo push, e tolte
-   dalla matrice in caso di dubbio.
+3. nella matrice solo etichette standard (`windows-latest`, `ubuntu-24.04`);
+   nessuna etichetta arm64 o "larger".
 
 Richiede il **push** (non autorizzato finora). È l'unica via gratuita trovata
 per eseguire i test su Windows reale senza procurarsi una licenza Windows.

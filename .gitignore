@@ -6,3 +6,4 @@ src-tauri/engine/
 .DS_Store
 *.log
 linux-out/
+CLAUDE.md

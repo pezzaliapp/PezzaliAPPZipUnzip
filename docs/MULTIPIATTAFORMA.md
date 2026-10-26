@@ -1,13 +1,15 @@
 # Verifica multipiattaforma — strategia a costo zero
 
-Stato al 25 ottobre 2026: **verificato solo macOS** (vedi [TEST.md](TEST.md)).
-Questo documento descrive come verificare Linux e Windows senza servizi a
-pagamento, carta di credito o fatturazione a consumo. Nessuno dei passi
-seguenti è stato eseguito: ognuno richiede l'autorizzazione di Alessandro Pezzali.
+Stato al 26 ottobre 2026: **verificati macOS e Linux (Ubuntu 24.04 in
+container, arm64 nativo e amd64 tramite Rosetta)**; Windows non verificato.
+Esiti in [TEST.md](TEST.md). Questo documento descrive come verificare le
+piattaforme senza servizi a pagamento, carta di credito o fatturazione a consumo.
+Il punto 1 è stato eseguito con autorizzazione; il punto 2 richiede il push,
+non ancora autorizzato.
 
 ## 1. Linux in locale con Colima (raccomandato per primo)
 
-### Fattibilità (verificata in sola lettura, Colima non avviato)
+### Fattibilità (rilevata il 25 ottobre 2026, prima dell'avvio)
 
 | Elemento | Stato |
 |---|---|
@@ -37,14 +39,39 @@ File nel repository: `ci/linux/Dockerfile`, `scripts/linux-docker.sh`.
 colima start                       # da eseguire solo dopo autorizzazione
 scripts/linux-docker.sh arm64      # Linux arm64 nativo
 scripts/linux-docker.sh amd64      # Linux x86_64 tramite Rosetta
+# prova del pacchetto installato e dell'interfaccia (esempio arm64):
+docker run --rm --platform linux/arm64 \
+  -v "$PWD/linux-out/arm64:/pkg:ro" -v "$PWD/ci/linux/test-package.sh:/opt/test.sh:ro" \
+  -v "$PWD/linux-out/arm64/ui:/out" \
+  ubuntu@sha256:18b33ff3829707f31ada654a963b9ee35f2e6f0241b964bd17a22a9b330cb63d bash /opt/test.sh
 colima stop                        # al termine
 ```
 
 Lo script monta il repository **in sola lettura**, compila una copia del commit
 corrente dentro il container ed esegue: `npm ci`, `fetch-7zip`, `tsc`, Vitest,
 `cargo test` (unità, IPC, integrazione con 7-Zip reale), `clippy`, build
-`.deb` e `.AppImage`, `--self-test` con display virtuale (Xvfb). Unica
-scrittura sul Mac: `linux-out/<arch>/` (pacchetti, log, SHA-256), ignorata da git.
+`.deb`, `--self-test` con display virtuale (Xvfb). Unica scrittura sul Mac:
+`linux-out/<arch>/` (pacchetti, log, SHA-256), ignorata da git.
+
+Lancio dei comandi lunghi: avviare Colima e i job in una sessione di processo
+separata (es. `nohup`/`setsid`). Durante la verifica la VM è stata arrestata
+una volta da un segnale di interruzione destinato al terminale da cui era
+stata avviata; nessun dato perso.
+
+### Perché solo `.deb` e non AppImage
+
+L'AppImage è stato generato in prova e poi **escluso** dalla distribuzione:
+1. `linuxdeploy` modifica gli eseguibili inclusi (imposta `RUNPATH $ORIGIN`):
+   il `7zz` dentro l'AppImage non era più identico all'eseguibile ufficiale;
+2. include circa 150 librerie di sistema (GTK, WebKitGTK, GStreamer, GnuTLS…,
+   molte LGPL) senza i relativi testi di licenza né offerta dei sorgenti;
+3. `linuxdeploy` e il suo plugin GTK vengono scaricati da GitHub senza
+   verifica d'integrità, uno dei due da un tag mobile ("continuous").
+
+Il `.deb` invece contiene solo i file del progetto e il `7zz` ufficiale non
+modificato, e lascia le librerie di sistema al gestore pacchetti della
+distribuzione. Un AppImage conforme richiederebbe strumenti verificati e un
+inventario completo delle licenze delle librerie incluse.
 
 Limiti: verifica build, test automatici e avvio dell'app con display virtuale;
 non sostituisce una prova manuale su un desktop Linux reale (GNOME/KDE,
@@ -93,7 +120,7 @@ per eseguire i test su Windows reale senza procurarsi una licenza Windows.
 
 ## Ordine consigliato
 
-1. Linux arm64 e amd64 con Colima (locale, nessun account, nessun push).
+1. ~~Linux arm64 e amd64 con Colima~~ — eseguito il 25-26 ottobre 2026.
 2. Dopo l'autorizzazione al push: GitHub Actions per Windows x64/arm64 (e
-   conferma di Linux e macOS su macchine pulite).
+   conferma di Linux x86_64 e macOS su macchine reali pulite).
 3. Aggiornare `docs/TEST.md` e il rapporto finale con i soli esiti ottenuti.

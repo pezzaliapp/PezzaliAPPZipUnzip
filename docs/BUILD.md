@@ -50,14 +50,14 @@ npm run tauri build    # produce installer MSI e NSIS
 Senza firma Authenticode (a pagamento) SmartScreen mostrerà un avviso:
 "Ulteriori informazioni" → "Esegui comunque".
 
-## Linux (non ancora verificato)
+## Linux (verificato su Ubuntu 24.04 in container)
 
 Dipendenze (Debian/Ubuntu): `libwebkit2gtk-4.1-dev build-essential curl wget file libxdo-dev libssl-dev libayatana-appindicator3-dev librsvg2-dev`.
 
 ```bash
 npm install
 npm run fetch-7zip
-npm run tauri build    # .deb, .rpm, .AppImage
+npm run tauri build -- --bundles deb    # solo .deb: AppImage escluso, vedi MULTIPIATTAFORMA.md
 ```
 
 ## Verifica di un pacchetto

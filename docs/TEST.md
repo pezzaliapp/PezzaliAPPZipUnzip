@@ -81,9 +81,55 @@ Motore: 7-Zip 26.05 ufficiale incluso (`src-tauri/engine/7zz`).
 | Test dopo le correzioni | Vitest 6/6, Rust 12/12 + 13/13, clippy 0 avvisi, `cargo fmt --check` ok |
 | Build senza motore | `npm run tauri build` si ferma con un messaggio chiaro |
 
+## Linux — 25-26 ottobre 2026, container Ubuntu 24.04 su Colima (Mac Apple Silicon)
+
+Procedura: `scripts/linux-docker.sh <arch>` (build e test) e
+`ci/linux/test-package.sh` (installazione del `.deb` in un Ubuntu 24.04 pulito,
+`--self-test`, interfaccia su schermo virtuale Xvfb). Immagine ufficiale
+`ubuntu:24.04` fissata per digest; Node.js 24.19.0 con SHA-256 da
+`SHASUMS256.txt` firmato (firma GPG verificata); Rust 1.96.0 con rustup.
+
+**arm64** è eseguito in modo nativo (VM `vz` arm64). **x86_64 (amd64)** è
+eseguito tramite **emulazione Rosetta** nella VM: la build e i test sono reali
+(binari x86_64 compilati ed eseguiti), ma non su hardware x86_64.
+
+| Verifica | arm64 (nativo) | amd64 (Rosetta) |
+|---|---|---|
+| `tsc --noEmit` | ✅ | ✅ |
+| Vitest | ✅ 6/6 | ✅ 6/6 |
+| Rust unità + IPC | ✅ 12/12 | ✅ 12/12 |
+| Integrazione con 7-Zip reale, sicurezza inclusa | ✅ 13/13 | ✅ 13/13 |
+| `clippy --all-targets -D warnings` | ✅ 0 avvisi | ✅ 0 avvisi |
+| Build release + `.deb` | ✅ | ✅ |
+| `--self-test` del binario compilato (Xvfb) | ✅ `7-Zip 26.05 (incluso)` | ✅ `7-Zip 26.05 (incluso)` |
+| `.deb` installato con `apt` in Ubuntu pulito | ✅ | ✅ |
+| `--self-test` dal percorso installato | ✅ `/usr/lib/PezzaliAPPZipUnzip/engine/7zz` | ✅ idem |
+| Interfaccia WebKitGTK su Xvfb | ✅ finestra 960×680, schermata principale e Informazioni catturate, nessun errore nel log | ✅ idem |
+| `7zz` nel `.deb` identico all'eseguibile ufficiale (SHA-256) | ✅ `17925963…7415` | ✅ `d32657a7…a886` |
+| Licenze nel `.deb` | ✅ `LICENSE`, `THIRD_PARTY_NOTICES.md`, `engine/License.txt`, `readme.txt`, `VERSION.txt` | ✅ idem |
+| Percorsi personali (`/Users`, nome utente, email, `/root`, `/work`, `/home`) | ✅ 0 | ✅ 0 |
+| Credenziali (chiavi private, token) | ✅ nessuna | ✅ nessuna |
+
+Pacchetti (cartella `linux-out/`, ignorata da git):
+- `linux-out/arm64/PezzaliAPPZipUnzip_1.0.0_arm64.deb` — SHA-256 `a5945265d20fca42115461b6c5f8b14f326e99225ea7a6bea20a36cdd6560aa3`
+- `linux-out/amd64/PezzaliAPPZipUnzip_1.0.0_amd64.deb` — SHA-256 `22324310aaf416ed6ffddccb73c56e735e7b09283194c792b3df4027aa54ce58`
+
+Note:
+- Gli unici messaggi nel log sono avvisi `libEGL … DRI3` dovuti all'assenza di
+  accelerazione grafica in Xvfb.
+- Con 680 px di altezza la finestra Informazioni richiede lo scorrimento.
+- Problemi trovati e corretti durante la verifica: test IPC che su macOS
+  passava solo grazie al 7-Zip di Homebrew (ora usa il motore del progetto);
+  locale POSIX nel container (ora `C.UTF-8`, come su un desktop).
+- **AppImage escluso**: generato in prova, poi scartato (motivi in
+  [MULTIPIATTAFORMA.md](MULTIPIATTAFORMA.md)); i file generati sono stati eliminati.
+
 ## Non verificato
 
-- Windows e Linux (nessuna macchina o VM avviata; vedi rapporto finale).
+- Windows (nessuna macchina o VM disponibile; vedi [MULTIPIATTAFORMA.md](MULTIPIATTAFORMA.md)).
+- Linux su un desktop reale (GNOME/KDE, trascinamento file, dialoghi nativi di
+  scelta file, interazione manuale) e su hardware x86_64 reale.
+- Distribuzioni diverse da Ubuntu 24.04.
 - Hardware Intel reale (solo Rosetta 2).
 - Estrazione di archivi RAR, ISO, CAB reali (formati gestiti da 7-Zip; nessun
   campione disponibile, la creazione di RAR non è consentita dalla licenza).

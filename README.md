@@ -46,7 +46,8 @@ Dettagli in [docs/SICUREZZA.md](docs/SICUREZZA.md).
 | macOS 26 Apple Silicon | ✅ verificata: build, test completi, avvio dell'app |
 | macOS Intel (x86_64) | ⚠️ build universale; test eseguiti tramite Rosetta 2, non su hardware Intel |
 | Windows 10/11 | ⚠️ supportata dal codice, **non ancora verificata** |
-| Linux (x64/arm64) | ⚠️ supportata dal codice, **non ancora verificata** |
+| Linux arm64 | ✅ verificata in container Ubuntu 24.04: build, test completi, pacchetto `.deb`, interfaccia su schermo virtuale |
+| Linux x64 | ⚠️ come arm64 ma tramite emulazione Rosetta, non su hardware x86_64 |
 
 Vedi [docs/TEST.md](docs/TEST.md) per gli esiti reali.
 

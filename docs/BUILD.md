@@ -36,7 +36,7 @@ Impostazioni di Sistema → Privacy e sicurezza → **Apri comunque**.
 
 Strategia gratuita per verificare Windows e Linux: [MULTIPIATTAFORMA.md](MULTIPIATTAFORMA.md).
 
-## Windows (non ancora verificato)
+## Windows (verificato su Windows Server 2025 x64 con GitHub Actions)
 
 Su Windows 10/11 con Microsoft C++ Build Tools e WebView2 (già presente in
 Windows 11):

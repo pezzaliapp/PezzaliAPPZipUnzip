@@ -124,14 +124,45 @@ Note:
 - **AppImage escluso**: generato in prova, poi scartato (motivi in
   [MULTIPIATTAFORMA.md](MULTIPIATTAFORMA.md)); i file generati sono stati eliminati.
 
+## Windows x64 — 26 ottobre 2026, GitHub Actions (runner standard)
+
+Run [40375818036](https://github.com/pezzaliapp/PezzaliAPPZipUnzip/actions/runs/40375818036)
+sul commit `bd9f69d`: runner `windows-latest` (Windows Server 2025, x64,
+immagine `windows-2025-vs2026`), Node 24, Rust stable 1.99.1. Minuti fatturati
+dal servizio: 0 (repository pubblico).
+
+| Verifica | Esito |
+|---|---|
+| `fetch-7zip` su host Windows (installer ufficiale aperto con `7zr.exe`, SHA-256 verificato) | ✅ |
+| `tsc`, Vitest | ✅ 6/6 |
+| Rust unità + IPC | ✅ 11/11 (`post_scan_neutralizes` è solo Unix) |
+| Integrazione con 7-Zip reale, sicurezza inclusa | ✅ 11/11 (link simbolici e interoperabilità con `zip`/`tar` di sistema sono test solo Unix) |
+| `clippy -D warnings` | ✅ |
+| Build: installer NSIS `…_x64-setup.exe` e MSI | ✅ entrambi prodotti |
+| `--self-test` del binario compilato | ✅ `7-Zip 26.05 (incluso)` |
+| Installer NSIS letto con 7-Zip senza eseguirlo | ✅ contiene `LICENSE`, `THIRD_PARTY_NOTICES.md`, `engine/License.txt`, `readme.txt`, `7z.exe`, `7z.dll` |
+| `7z.exe`, `7z.dll`, `License.txt`, `readme.txt` nell'installer | ✅ identici all'installer ufficiale 7-Zip 26.05 (verificato anche in locale) |
+| Installazione silenziosa per utente sul runner | ✅ in `%LOCALAPPDATA%\PezzaliAPPZipUnzip` |
+| `--self-test` dall'app installata | ✅ `7-Zip 26.05 (incluso)` |
+| Percorsi di sviluppo o personali nell'installer | ✅ 0 |
+
+Problema trovato e corretto: i test Rust su Windows terminavano con
+`STATUS_ENTRYPOINT_NOT_FOUND` perché il manifest di Windows era incorporato solo
+nell'app; ora `build.rs` lo passa al linker per tutti gli eseguibili.
+
+Nello stesso run, **Linux x64 su hardware x86_64 reale** (`ubuntu-24.04`):
+Vitest 6/6, Rust 12/12 + 13/13, clippy, `.deb`, `--self-test` ✅.
+
+**Non verificati su Windows**: interazione manuale con l'interfaccia, trascinamento
+file, dialoghi nativi, Windows 10, Windows arm64, l'MSI (prodotto ma non
+installato: non viene distribuito).
+
 ## Non verificato
 
-- Windows (nessuna macchina o VM disponibile; vedi [MULTIPIATTAFORMA.md](MULTIPIATTAFORMA.md)).
+- Interazione manuale con l'interfaccia su Windows e Linux; Windows arm64.
 - Linux su un desktop reale (GNOME/KDE, trascinamento file, dialoghi nativi di
-  scelta file, interazione manuale) e su hardware x86_64 reale.
+  scelta file, interazione manuale).
 - Distribuzioni diverse da Ubuntu 24.04.
 - Hardware Intel reale (solo Rosetta 2).
 - Estrazione di archivi RAR, ISO, CAB reali (formati gestiti da 7-Zip; nessun
   campione disponibile, la creazione di RAR non è consentita dalla licenza).
-- Script `fetch-7zip` eseguito su host Windows (testato da macOS anche per i
-  target `win-x64` e `linux-x64`: download, hash ed estrazione riusciti).

@@ -1,11 +1,11 @@
 # Verifica multipiattaforma — strategia a costo zero
 
 Stato al 26 ottobre 2026: **verificati macOS e Linux (Ubuntu 24.04 in
-container, arm64 nativo e amd64 tramite Rosetta)**; Windows non verificato.
+container, arm64 nativo e amd64 tramite Rosetta) e Windows x64 (GitHub
+Actions, 26 ottobre 2026)**; Windows arm64 non verificato.
 Esiti in [TEST.md](TEST.md). Questo documento descrive come verificare le
 piattaforme senza servizi a pagamento, carta di credito o fatturazione a consumo.
-Il punto 1 è stato eseguito con autorizzazione; il punto 2 richiede il push,
-non ancora autorizzato.
+I punti 1 e 2 sono stati eseguiti con autorizzazione.
 
 ## 1. Linux in locale con Colima (raccomandato per primo)
 

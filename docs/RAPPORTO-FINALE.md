@@ -9,7 +9,8 @@ sul motore ufficiale 7-Zip 26.05, interamente offline e senza costi.
 **Verificata su macOS** (Apple Silicon, nativo; Intel tramite Rosetta).
 **Verificata su Linux** (Ubuntu 24.04 in container: arm64 nativo, x86_64
 tramite emulazione Rosetta; pacchetto `.deb`, interfaccia su schermo virtuale).
-**Windows è supportato dal codice ma non ancora verificato.**
+**Verificata su Windows x64** con test automatici su GitHub Actions (Windows
+Server 2025): build, test, installer e diagnostica dopo l'installazione.
 
 ## 2. Funzioni realizzate
 
@@ -45,18 +46,17 @@ tramite emulazione Rosetta; pacchetto `.deb`, interfaccia su schermo virtuale).
 |---|---|---|---|
 | macOS arm64 (26.6.2) | ✅ `.app`, `.dmg` | ✅ 31/31 | ✅ |
 | macOS universale (arm64 + x86_64) | ✅ `.app`, `.dmg` | ✅ suite Rust x86_64 con Rosetta | ✅ `--self-test` x86_64 con Rosetta |
-| Windows x64/arm64 | non eseguita | non eseguiti | — |
+| Windows x64 (Server 2025, GitHub Actions) | ✅ NSIS `.exe` (e MSI non distribuito) | ✅ 6 + 11 + 11 (test solo Unix esclusi), clippy 0 | ✅ installazione silenziosa e `--self-test` |
+| Windows arm64 | non eseguita | non eseguiti | — |
 | Linux arm64 (Ubuntu 24.04, container nativo) | ✅ `.deb` | ✅ 6 + 12 + 13, clippy 0 | ✅ `.deb` installato, `--self-test`, interfaccia su Xvfb |
 | Linux x86_64 (Ubuntu 24.04, container con Rosetta) | ✅ `.deb` | ✅ 6 + 12 + 13, clippy 0 (emulazione) | ✅ idem (emulazione) |
 | Linux AppImage | escluso (licenze e binario 7-Zip modificato, vedi MULTIPIATTAFORMA.md) | — | — |
 
 ## 6. Limitazioni note
 
-1. **Windows non verificato.** Punti da controllare: lettura della
-   password da stdin con caratteri non ASCII, estrazione dell'installer 7-Zip
-   con `7zr.exe` nello script `fetch-7zip` su host Windows. Linux verificato
-   solo in container Ubuntu 24.04 (non su un desktop reale né su hardware
-   x86_64 reale).
+1. **Nessuna prova manuale dell'interfaccia su Windows e Linux**: verificati
+   con test automatici, installazione e diagnostica; Linux anche con
+   l'interfaccia su schermo virtuale. Windows arm64 non verificato.
 2. **Nessuna firma a pagamento**: macOS mostra l'avviso di Gatekeeper (firma
    ad-hoc, nessuna notarizzazione); Windows mostrerà SmartScreen.
 3. Password ZIP limitate ai caratteri ASCII (limite di 7-Zip): l'app lo spiega e suggerisce 7z.
@@ -71,9 +71,7 @@ tramite emulazione Rosetta; pacchetto `.deb`, interfaccia su schermo virtuale).
 **Pronta per una pubblicazione macOS di prova**, previa tua autorizzazione.
 Prima di pubblicare:
 
-1. Decidere se verificare Windows: strategia gratuita pronta in
-   [MULTIPIATTAFORMA.md](MULTIPIATTAFORMA.md) (GitHub Actions su repository
-   pubblico, richiede l'autorizzazione al push).
+1. Windows x64 verificato con GitHub Actions (0 minuti fatturati).
 2. Allegare alla release il sorgente `7z2605-src.tar.xz` (obbligo LGPL).
 3. Indicare nelle note le piattaforme realmente verificate.
 4. Push e release: **non eseguiti**, in attesa di autorizzazione.
